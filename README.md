@@ -21,3 +21,13 @@ Aplicación web de una pizzería con componentes de React, utilizando Bootstrap 
 - ✅ Bootstrap para estilos
 
 ## 📁 Estructura del Proyecto
+src/
+├── components/
+│ ├── Navbar.jsx
+│ ├── Header.jsx
+│ ├── Home.jsx
+│ ├── CardPizza.jsx
+│ └── Footer.jsx
+├── assets/
+├── App.jsx
+└── main.jsx
