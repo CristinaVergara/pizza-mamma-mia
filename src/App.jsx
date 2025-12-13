@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import Navbar from './components/Navbar';
+import Header from './components/Header';
 import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
+import Cart from './components/Cart';
 import Footer from './components/Footer';
 
 const App = () => {
@@ -20,19 +22,27 @@ const App = () => {
         return <Login />;
       case 'register': 
         return <Register />;
+      case 'cart': 
+        return <Cart />;
       default: 
         return <Home />;
     }
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div className="d-flex flex-column min-vh-100">
+      {/* 1. Navbar con navegación */}
       <Navbar onNavigate={handleNavigation} />
       
-      <main style={{ flex: 1, padding: '2rem' }}>
+      {/* 2. Header con imagen de fondo y overlay */}
+      <Header />
+      
+      {/* 3. Contenido principal según navegación */}
+      <main className="flex-grow-1">
         {renderPage()}
       </main>
       
+      {/* 4. Footer */}
       <Footer />
     </div>
   );
