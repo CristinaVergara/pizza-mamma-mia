@@ -1,66 +1,74 @@
 import React from 'react';
 
-const Navbar = () => {
- 
-  const token = false; 
-  const total = 25000; 
-  
-  
-  const formatPrice = (price) => {
-    return price.toLocaleString('es-CL');
-  };
-
+const Navbar = ({ onNavigate }) => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div className="container">
-        <a className="navbar-brand fw-bold" href="#">
-          🍕 Pizzería Mamma Mía
+    <nav style={styles.navbar}>
+      <div style={styles.logo}>Pizzería Mamma Mía</div>
+      <div style={styles.navLinks}>
+        <a 
+          href="#" 
+          onClick={(e) => {
+            e.preventDefault();
+            onNavigate('home');
+          }}
+          style={styles.navLink}
+        >
+          Home
         </a>
-        
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span className="navbar-toggler-icon"></span>
-        </button>
-
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto">
-            {/* Home - SIEMPRE visible */}
-            <li className="nav-item">
-              <button className="btn btn-link nav-link text-white">Home</button>
-            </li>
-            
-            {/* Profile y Logout - SOLO si token=true */}
-            {token ? (
-              <>
-                <li className="nav-item">
-                  <button className="btn btn-link nav-link text-white">Profile</button>
-                </li>
-                <li className="nav-item">
-                  <button className="btn btn-link nav-link text-white">Logout</button>
-                </li>
-              </>
-            ) : (
-              
-              <>
-                <li className="nav-item">
-                  <button className="btn btn-link nav-link text-white">Login</button>
-                </li>
-                <li className="nav-item">
-                  <button className="btn btn-link nav-link text-white">Register</button>
-                </li>
-              </>
-            )}
-            
-            {/* Total - SIEMPRE visible */}
-            <li className="nav-item">
-              <button className="btn btn-outline-warning ms-2">
-                Total: ${formatPrice(total)}
-              </button>
-            </li>
-          </ul>
-        </div>
+        <a 
+          href="#" 
+          onClick={(e) => {
+            e.preventDefault();
+            onNavigate('login');
+          }}
+          style={styles.navLink}
+        >
+          Login
+        </a>
+        <a 
+          href="#" 
+          onClick={(e) => {
+            e.preventDefault();
+            onNavigate('register');
+          }}
+          style={styles.navLink}
+        >
+          Register
+        </a>
       </div>
     </nav>
   );
+};
+
+// Estilos que coinciden con el diseño del Hito 1
+const styles = {
+  navbar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '1rem 2rem',
+    backgroundColor: '#f8f9fa',
+    borderBottom: '1px solid #dee2e6',
+    fontFamily: 'Arial, sans-serif'
+  },
+  logo: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    color: '#d32f2f'
+  },
+  navLinks: {
+    display: 'flex',
+    gap: '1.5rem'
+  },
+  navLink: {
+    textDecoration: 'none',
+    color: '#495057',
+    fontSize: '1rem',
+    padding: '0.5rem 0',
+    borderBottom: '2px solid transparent',
+    transition: 'all 0.3s ease',
+    cursor: 'pointer'
+  }
 };
 
 export default Navbar;
