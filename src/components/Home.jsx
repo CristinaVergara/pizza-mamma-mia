@@ -1,22 +1,92 @@
-import React from 'react';
-import { pizzas } from '../data/pizzas';
-import CardPizza from './CardPizza';
+import { useState, useEffect } from 'react';
+import './Home.css'; // ✅ AHORA SÍ EXISTE
 
 const Home = () => {
+  const [pizzas, setPizzas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchPizzas = async () => {
+      try {
+        const response = await fetch('http://localhost:5001/api/pizzas');
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setPizzas(data);
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching pizzas:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPizzas();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Cargando pizzas...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="error-container">
+        <h2>¡Ups! Algo salió mal</h2>
+        <p>Error: {error}</p>
+        <button onClick={() => window.location.reload()}>
+          Intentar de nuevo
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="container py-5">
-      <h1 className="text-center text-danger mb-4">🍕 Nuestras Pizzas</h1>
-      <p className="text-center text-muted mb-5">Selecciona tu pizza favorita</p>
+    <div className="home-container">
+      <h1 className="home-title">🍕 Nuestras Deliciosas Pizzas</h1>
+      <p className="home-subtitle">Selecciona tu favorita</p>
       
-      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+      <div className="pizzas-grid">
         {pizzas.map((pizza) => (
-          <div key={pizza.id} className="col">
-            <CardPizza 
-              name={pizza.name}
-              price={pizza.price}
-              ingredients={pizza.ingredients}
-              img={pizza.image}
-            />
+          <div key={pizza.id} className="pizza-card">
+            <div className="pizza-image-container">
+              <img 
+                src={pizza.img} 
+                alt={pizza.name}
+                className="pizza-image"
+                loading="lazy"
+              />
+            </div>
+            
+            <div className="pizza-info">
+              <h3 className="pizza-name">{pizza.name}</h3>
+              
+              <div className="pizza-ingredients">
+                <strong>Ingredientes:</strong>
+                <div className="ingredients-list">
+                  {pizza.ingredients.map((ingredient, index) => (
+                    <span key={index} className="ingredient-tag">
+                      {ingredient}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="pizza-price-section">
+                <span className="pizza-price">
+                  ${pizza.price.toLocaleString()}
+                </span>
+                <button className="add-to-cart-btn">
+                  Añadir al carrito
+                </button>
+              </div>
+            </div>
           </div>
         ))}
       </div>
