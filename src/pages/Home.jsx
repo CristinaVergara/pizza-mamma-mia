@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import './Home.css'; 
-import CardPizza from "../components/CardPizza"
+import './Home.css';
+import { useCart } from '../context/CartContext'; // ← NUEVO IMPORT
 
 const Home = () => {
   const [pizzas, setPizzas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { addToCart } = useCart(); // ← OBTENER FUNCIÓN DEL CONTEXT
 
   useEffect(() => {
     const fetchPizzas = async () => {
@@ -26,6 +27,13 @@ const Home = () => {
 
     fetchPizzas();
   }, []);
+
+  // Función para manejar agregar al carrito
+  const handleAddToCart = (pizza) => {
+    addToCart(pizza);
+    // Opcional: Mostrar notificación
+    alert(`¡${pizza.name} agregada al carrito!`);
+  };
 
   if (loading) {
     return (
@@ -81,9 +89,12 @@ const Home = () => {
               
               <div className="pizza-price-section">
                 <span className="pizza-price">
-                  ${pizza.price.toLocaleString()}
+                  ${pizza.price.toFixed(2)}
                 </span>
-                <button className="add-to-cart-btn">
+                <button 
+                  className="add-to-cart-btn"
+                  onClick={() => handleAddToCart(pizza)} // ← ACTUALIZADO
+                >
                   Añadir al carrito
                 </button>
               </div>

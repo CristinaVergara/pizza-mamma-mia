@@ -1,203 +1,161 @@
-// src/components/Cart.jsx
-import React, { useState } from 'react';
-import { pizzaCart } from '../data/pizzas';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext'; // ← NUEVO IMPORT
 
 const Cart = () => {
-  const [cart, setCart] = useState(pizzaCart);
+  const { 
+    cart, 
+    addToCart, 
+    removeFromCart, 
+    removeItemCompletely, 
+    calculateTotal,
+    clearCart 
+  } = useCart();
 
-  const increaseQuantity = (id) => {
-    setCart(cart.map(item => 
-      item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-    ));
-  };
+  const cartTotal = calculateTotal();
 
-  const decreaseQuantity = (id) => {
-    setCart(cart.map(item => 
-      item.id === id ? { ...item, quantity: Math.max(0, item.quantity - 1) } : item
-    ).filter(item => item.quantity > 0));
-  };
-
-  const calculateTotal = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-  };
+  if (cart.length === 0) {
+    return (
+      <div className="container mt-5">
+        <div className="text-center py-5">
+          <div className="display-1 text-muted mb-4">🛒</div>
+          <h2 className="mb-3">Tu carrito está vacío</h2>
+          <p className="text-muted mb-4">
+            Parece que aún no has agregado ninguna pizza a tu carrito.
+          </p>
+          <Link to="/" className="btn btn-primary btn-lg">
+            🍕 Ver Pizzas
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>🛒 Carrito de Compras</h2>
+    <div className="container mt-4 mb-5">
+      <h1 className="mb-4 text-center">🛒 Tu Carrito de Compras</h1>
       
-      <div style={styles.cartItems}>
-        {cart.length === 0 ? (
-          <p style={styles.emptyCart}>El carrito está vacío</p>
-        ) : (
-          <>
-            {cart.map((item) => (
-              <div key={item.id} style={styles.cartItem}>
-                <div style={styles.itemInfo}>
-                  <img src={item.image} alt={item.name} style={styles.itemImage} />
-                  <div style={styles.itemDetails}>
-                    <h3 style={styles.itemName}>{item.name}</h3>
-                    <p style={styles.itemPrice}>${item.price.toLocaleString('es-CL')} c/u</p>
+      <div className="row">
+        <div className="col-lg-8">
+          <div className="card shadow-sm mb-4">
+            <div className="card-body">
+              <h3 className="card-title mb-4">Productos ({cart.length})</h3>
+              
+              {cart.map((item) => (
+                <div key={item.id} className="d-flex align-items-center border-bottom pb-3 mb-3">
+                  <div className="flex-shrink-0 me-3">
+                    <img 
+                      src={item.img} 
+                      alt={item.name}
+                      className="rounded"
+                      style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1513104890138-7c749659a591';
+                      }}
+                    />
+                  </div>
+                  
+                  <div className="flex-grow-1">
+                    <h5 className="mb-1">{item.name}</h5>
+                    <p className="text-muted mb-2 small">
+                      {item.ingredients.join(', ')}
+                    </p>
+                    <div className="d-flex align-items-center justify-content-between">
+                      <div>
+                        <span className="fw-bold text-danger fs-5">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </span>
+                        <small className="text-muted ms-2">
+                          (${item.price.toFixed(2)} c/u)
+                        </small>
+                      </div>
+                      
+                      <div className="d-flex align-items-center">
+                        <button 
+                          className="btn btn-outline-secondary btn-sm"
+                          onClick={() => removeFromCart(item.id)}
+                          disabled={item.quantity <= 1}
+                        >
+                          −
+                        </button>
+                        
+                        <span className="mx-3 fw-bold">{item.quantity}</span>
+                        
+                        <button 
+                          className="btn btn-outline-secondary btn-sm"
+                          onClick={() => addToCart(item)}
+                        >
+                          +
+                        </button>
+                        
+                        <button 
+                          className="btn btn-outline-danger btn-sm ms-3"
+                          onClick={() => removeItemCompletely(item.id)}
+                        >
+                          🗑️ Eliminar
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                
-                <div style={styles.quantityControls}>
-                  <button 
-                    onClick={() => decreaseQuantity(item.id)}
-                    style={styles.quantityButton}
-                  >
-                    -
-                  </button>
-                  <span style={styles.quantity}>{item.quantity}</span>
-                  <button 
-                    onClick={() => increaseQuantity(item.id)}
-                    style={styles.quantityButton}
-                  >
-                    +
-                  </button>
-                </div>
-                
-                <div style={styles.subtotal}>
-                  ${(item.price * item.quantity).toLocaleString('es-CL')}
-                </div>
+              ))}
+              
+              <div className="d-flex justify-content-between mt-3">
+                <Link to="/" className="btn btn-outline-primary">
+                  ← Continuar comprando
+                </Link>
+                <button 
+                  className="btn btn-outline-danger"
+                  onClick={clearCart}
+                >
+                  🗑️ Vaciar carrito
+                </button>
               </div>
-            ))}
-            
-            <div style={styles.totalContainer}>
-              <h3 style={styles.totalTitle}>Total:</h3>
-              <h3 style={styles.totalAmount}>
-                ${calculateTotal().toLocaleString('es-CL')}
-              </h3>
             </div>
-            
-            <button style={styles.payButton}>
-              💳 Pagar
-            </button>
-          </>
-        )}
+          </div>
+        </div>
+        
+        <div className="col-lg-4">
+          <div className="card shadow-sm sticky-top" style={{ top: '20px' }}>
+            <div className="card-body">
+              <h3 className="card-title mb-4">Resumen del Pedido</h3>
+              
+              <div className="mb-3">
+                {cart.map((item) => (
+                  <div key={item.id} className="d-flex justify-content-between mb-2">
+                    <span>
+                      {item.name} x{item.quantity}
+                    </span>
+                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+                  </div>
+                ))}
+              </div>
+              
+              <hr />
+              
+              <div className="d-flex justify-content-between mb-3">
+                <span className="fw-bold">Total:</span>
+                <span className="fw-bold fs-4 text-danger">${cartTotal.toFixed(2)}</span>
+              </div>
+              
+              <div className="alert alert-info small mb-4">
+                <i className="bi bi-info-circle me-1"></i>
+                El total mostrado aquí es el mismo que aparece en el Navbar.
+              </div>
+              
+              <button className="btn btn-success btn-lg w-100 py-3">
+                🛒 Proceder al Pago
+              </button>
+              
+              <p className="text-center text-muted small mt-3">
+                * El pago será implementado en el siguiente hito
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: '800px',
-    margin: '0 auto',
-    padding: '2rem',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '12px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-  },
-  title: {
-    color: '#333',
-    marginBottom: '2rem',
-    textAlign: 'center',
-    fontSize: '1.8rem'
-  },
-  cartItems: {
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    padding: '1.5rem'
-  },
-  emptyCart: {
-    textAlign: 'center',
-    color: '#666',
-    fontSize: '1.1rem',
-    padding: '2rem'
-  },
-  cartItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '1rem',
-    borderBottom: '1px solid #eee',
-    marginBottom: '0.5rem'
-  },
-  itemInfo: {
-    display: 'flex',
-    alignItems: 'center',
-    flex: 1
-  },
-  itemImage: {
-    width: '60px',
-    height: '60px',
-    borderRadius: '8px',
-    objectFit: 'cover',
-    marginRight: '1rem'
-  },
-  itemDetails: {
-    flex: 1
-  },
-  itemName: {
-    margin: '0',
-    fontSize: '1.1rem',
-    color: '#333'
-  },
-  itemPrice: {
-    margin: '0.25rem 0 0 0',
-    color: '#666',
-    fontSize: '0.9rem'
-  },
-  quantityControls: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem'
-  },
-  quantityButton: {
-    backgroundColor: '#f0f0f0',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    width: '30px',
-    height: '30px',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  quantity: {
-    minWidth: '30px',
-    textAlign: 'center',
-    fontWeight: 'bold'
-  },
-  subtotal: {
-    fontWeight: 'bold',
-    fontSize: '1.1rem',
-    color: '#d32f2f',
-    minWidth: '100px',
-    textAlign: 'right'
-  },
-  totalContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '1.5rem 1rem',
-    borderTop: '2px solid #eee',
-    marginTop: '1rem'
-  },
-  totalTitle: {
-    margin: '0',
-    fontSize: '1.3rem',
-    color: '#333'
-  },
-  totalAmount: {
-    margin: '0',
-    fontSize: '1.5rem',
-    color: '#d32f2f'
-  },
-  payButton: {
-    backgroundColor: '#4CAF50',
-    color: 'white',
-    border: 'none',
-    padding: '1rem 2rem',
-    borderRadius: '8px',
-    cursor: 'pointer',
-    fontSize: '1.1rem',
-    fontWeight: 'bold',
-    width: '100%',
-    marginTop: '1rem',
-    transition: 'background-color 0.3s ease'
-  }
 };
 
 export default Cart;
