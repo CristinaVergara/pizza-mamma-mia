@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import './Home.css';
-import { useCart } from '../context/CartContext'; // ← NUEVO IMPORT
+import { useCart } from '../context/CartContext'; 
 
 const Home = () => {
   const [pizzas, setPizzas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { addToCart } = useCart(); // ← OBTENER FUNCIÓN DEL CONTEXT
+  const { addToCart } = useCart(); 
 
   useEffect(() => {
     const fetchPizzas = async () => {
@@ -28,10 +28,10 @@ const Home = () => {
     fetchPizzas();
   }, []);
 
-  // Función para manejar agregar al carrito
+  
   const handleAddToCart = (pizza) => {
     addToCart(pizza);
-    // Opcional: Mostrar notificación
+   
     alert(`¡${pizza.name} agregada al carrito!`);
   };
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext'; // ← NUEVO IMPORT
+import { useCart } from '../context/CartContext';
+import { useUser } from '../context/UserContext';
 
 const Cart = () => {
   const { 
@@ -11,7 +12,9 @@ const Cart = () => {
     calculateTotal,
     clearCart 
   } = useCart();
-
+  
+  const { token } = useUser();
+  
   const cartTotal = calculateTotal();
 
   if (cart.length === 0) {
@@ -138,17 +141,38 @@ const Cart = () => {
                 <span className="fw-bold fs-4 text-danger">${cartTotal.toFixed(2)}</span>
               </div>
               
-              <div className="alert alert-info small mb-4">
-                <i className="bi bi-info-circle me-1"></i>
-                El total mostrado aquí es el mismo que aparece en el Navbar.
+              <div className={`alert ${token ? 'alert-info' : 'alert-warning'} small mb-4`}>
+                {token ? (
+                  <>
+                    <i className="bi bi-check-circle me-1"></i>
+                    Usuario autenticado. Puede proceder al pago.
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-exclamation-triangle me-1"></i>
+                    Debes <Link to="/login" className="alert-link">iniciar sesión</Link> para proceder al pago.
+                  </>
+                )}
               </div>
               
-              <button className="btn btn-success btn-lg w-100 py-3">
-                🛒 Proceder al Pago
+              <button 
+                className="btn btn-success btn-lg w-100 py-3"
+                disabled={!token}
+                onClick={() => {
+                  if (token) {
+                    alert('Procesando pago... (simulado)');
+                    clearCart();
+                  }
+                }}
+              >
+                {token ? '🛒 Proceder al Pago' : '🔒 Inicia sesión para pagar'}
               </button>
               
               <p className="text-center text-muted small mt-3">
-                * El pago será implementado en el siguiente hito
+                {token 
+                  ? '* El pago será implementado en el siguiente hito'
+                  : '* Inicia sesión para habilitar el pago'
+                }
               </p>
             </div>
           </div>

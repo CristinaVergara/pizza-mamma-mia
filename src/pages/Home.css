@@ -1,4 +1,4 @@
-/* Home.css - Estilos específicos para el componente Home */
+
 
 .home-container {
   max-width: 1200px;
@@ -127,7 +127,7 @@
   transform: scale(1.05);
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .home-title {
     font-size: 2rem;

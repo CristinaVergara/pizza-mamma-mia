@@ -1,56 +1,89 @@
-import React from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
 const Pizza = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
+  const [pizza, setPizza] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Datos de ejemplo (deberías obtenerlos de tu backend)
-  const pizzaData = {
-    p001: {
-      name: "Margarita Clásica",
-      price: 12.99,
-      img: "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca",
-      ingredients: ["Salsa de tomate", "Mozzarella fresca", "Albahaca fresca", "Aceite de oliva"],
-      description: "La pizza italiana por excelencia. Simple, fresca y deliciosa."
-    },
-    p002: {
-      name: "Pepperoni Picante",
-      price: 14.99,
-      img: "https://images.unsplash.com/photo-1628840042765-356cda07504e",
-      ingredients: ["Salsa de tomate", "Mozzarella", "Pepperoni", "Orégano", "Pimiento"],
-      description: "Para los amantes del picante. Pepperoni de alta calidad y mucho queso."
-    },
-    p003: {
-      name: "Cuatro Quesos",
-      price: 15.99,
-      img: "https://images.unsplash.com/photo-1552539618-7e6e6f6c2484",
-      ingredients: ["Mozzarella", "Gorgonzola", "Parmesano", "Fontina", "Nata"],
-      description: "Una explosión de sabores queseros en cada bocado."
+  
+  useEffect(() => {
+    const fetchPizza = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await fetch(`http://localhost:5001/api/pizzas/${id}`);
+        
+        if (response.status === 404) {
+          throw new Error(`Pizza con ID "${id}" no encontrada`);
+        }
+        
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: No se pudo cargar la pizza`);
+        }
+        
+        const data = await response.json();
+        setPizza(data);
+      } catch (err) {
+        setError(err.message);
+        console.error('Error fetching pizza:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPizza();
+  }, [id]);
+
+  const handleAddToCart = () => {
+    if (pizza) {
+      addToCart(pizza);
+      alert(`¡${pizza.name} agregada al carrito!`);
     }
   };
 
-  // Obtener datos de la pizza o usar valores por defecto
-  const pizza = pizzaData[id] || {
-    name: `Pizza Especial #${id}`,
-    price: 13.50,
-    img: "https://images.unsplash.com/photo-1513104890138-7c749659a591",
-    ingredients: ["Ingrediente especial 1", "Ingrediente especial 2", "Ingrediente secreto"],
-    description: "Una pizza única creada especialmente para ti."
-  };
 
-  const handleAddToCart = () => {
-    addToCart({
-      id: id,
-      name: pizza.name,
-      price: pizza.price,
-      img: pizza.img,
-      ingredients: pizza.ingredients
-    });
-    alert(`¡${pizza.name} agregada al carrito!`);
-  };
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>Cargando pizza...</p>
+      </div>
+    );
+  }
 
+
+  if (error || !pizza) {
+    return (
+      <div className="error-container">
+        <h2>🍕 Pizza No Encontrada</h2>
+        <div className="alert alert-warning" style={{ maxWidth: '500px', margin: '20px auto' }}>
+          <p><strong>Error:</strong> {error || 'La pizza solicitada no existe'}</p>
+          <p className="mb-0">
+            <strong>ID buscado:</strong> <code>{id}</code>
+          </p>
+        </div>
+        <div className="mt-4">
+          <Link to="/" className="btn btn-primary me-3">
+            ← Volver al Menú
+          </Link>
+          <Link to="/pizza/p001" className="btn btn-outline-primary">
+            Ver Pizza Margarita
+          </Link>
+        </div>
+        <div className="mt-5">
+          <p className="text-muted">
+            IDs válidos: <code>p001</code>, <code>p002</code>, <code>p003</code>
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  
   return (
     <div className="pizza-detail-container">
       <div className="pizza-detail">
@@ -61,7 +94,7 @@ const Pizza = () => {
             alt={pizza.name}
             className="pizza-detail-image"
             onError={(e) => {
-              e.target.src = "https://images.unsplash.com/photo-1513104890138-7c749659a591";
+              e.target.src = 'https://images.unsplash.com/photo-1513104890138-7c749659a591';
             }}
           />
         </div>
@@ -95,10 +128,10 @@ const Pizza = () => {
             </h3>
             <p className="pizza-description">{pizza.description}</p>
             <p className="mt-3">
-              <strong>ID de la pizza en el sistema:</strong> <code>{id}</code>
+              <strong>ID de la pizza:</strong> <code>{id}</code>
             </p>
             <p className="text-muted small">
-              Esta ruta usa parámetros dinámicos: <code>/pizza/:id</code>
+              Datos obtenidos de: <code>GET /api/pizzas/{id}</code>
             </p>
           </div>
 

@@ -2,11 +2,11 @@ import React from 'react';
 import './Profile.css';
 
 const Profile = () => {
-  const userEmail = "mammamia@pizza.com"; // Estático por ahora
+  const userEmail = "mammamia@pizza.com"; 
 
   const handleLogout = () => {
     alert("Sesión cerrada (simulado)");
-    // En hitos futuros aquí irá la lógica real
+    
   };
 
   return (

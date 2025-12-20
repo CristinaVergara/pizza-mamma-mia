@@ -31,7 +31,7 @@ const Login = () => {
       return;
     }
 
-    // Simulación de éxito
+    
     setMessage('Inicio de sesión exitoso.');
     setIsError(false);
   };

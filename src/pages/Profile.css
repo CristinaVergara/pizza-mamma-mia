@@ -85,7 +85,7 @@
   box-shadow: 0 5px 15px rgba(228, 77, 38, 0.3);
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
   .profile-card {
     padding: 2rem;
