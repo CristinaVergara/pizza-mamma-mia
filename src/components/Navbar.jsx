@@ -1,41 +1,59 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-const Navbar = ({ onNavigate }) => {
+const Navbar = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
       <div className="container">
-        <span className="navbar-brand text-danger fw-bold fs-4">
-          Pizzería Mamma Mía
-        </span>
+        {/* Logo con Link a Home */}
+        <Link 
+          to="/" 
+          className="navbar-brand text-danger fw-bold fs-4 text-decoration-none"
+        >
+          🍕 Pizzería Mamma Mía
+        </Link>
         
-        <div className="d-flex">
-          <button 
-            onClick={() => onNavigate('home')}
-            className="btn btn-outline-primary btn-sm mx-1"
+        <div className="d-flex align-items-center">
+          {/* Home */}
+          <Link 
+            to="/"
+            className="btn btn-outline-primary btn-sm mx-1 text-decoration-none"
           >
-            Home
-          </button>
+            🏠 Home
+          </Link>
           
-          <button 
-            onClick={() => onNavigate('login')}
-            className="btn btn-outline-primary btn-sm mx-1"
+          {/* Login */}
+          <Link 
+            to="/login"
+            className="btn btn-outline-primary btn-sm mx-1 text-decoration-none"
           >
-            Login
-          </button>
+            🔐 Login
+          </Link>
           
-          <button 
-            onClick={() => onNavigate('register')}
-            className="btn btn-outline-primary btn-sm mx-1"
+          {/* Register */}
+          <Link 
+            to="/register"
+            className="btn btn-outline-primary btn-sm mx-1 text-decoration-none"
           >
-            Register
-          </button>
+            📝 Register
+          </Link>
           
-          <button 
-            onClick={() => onNavigate('cart')}
-            className="btn btn-success btn-sm mx-1"
+          {/* Perfil (nuevo para Hito 5) */}
+          <Link 
+            to="/profile"
+            className="btn btn-outline-info btn-sm mx-1 text-decoration-none"
           >
-            🛒 Carrito
-          </button>
+            👤 Perfil
+          </Link>
+          
+          {/* Carrito con icono y total */}
+          <Link 
+            to="/cart"
+            className="btn btn-success btn-sm mx-1 d-flex align-items-center text-decoration-none"
+          >
+            <span className="me-1">🛒</span>
+            Carrito
+          </Link>
         </div>
       </div>
     </nav>

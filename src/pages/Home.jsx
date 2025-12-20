@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import './Home.css'; // ✅ AHORA SÍ EXISTE
+import './Home.css'; 
+import CardPizza from "../components/CardPizza"
 
 const Home = () => {
   const [pizzas, setPizzas] = useState([]);
