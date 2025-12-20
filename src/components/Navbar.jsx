@@ -1,11 +1,20 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useCart } from '../context/CartContext'; // ← NUEVO IMPORT
+import { Link, useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useUser } from '../context/UserContext';
 
 const Navbar = () => {
-  const { calculateTotal, calculateTotalItems } = useCart(); // ← USAR CONTEXT
-  const cartTotal = calculateTotal();
-  const totalItems = calculateTotalItems();
+  const { cart } = useCart();
+  const { user, logout } = useUser();
+  const navigate = useNavigate();
+
+  // CORREGIDO: estas son las variables que SÍ existen
+  const cartItemCount = cart ? cart.length : 0;
+  const totalPrice = cart.reduce((total, item) => total + (item.price || 0), 0);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
@@ -21,31 +30,42 @@ const Navbar = () => {
             🏠 Home
           </Link>
           
-          {/* Login */}
-          <Link to="/login" className="btn btn-outline-primary btn-sm mx-1 text-decoration-none">
-            🔐 Login
-          </Link>
+          {/* Lógica de usuario */}
+          {user ? (
+            <>
+              <Link to="/profile" className="btn btn-outline-info btn-sm mx-1 text-decoration-none">
+                👤 {user.email}
+              </Link>
+              <button 
+                onClick={handleLogout} 
+                className="btn btn-outline-danger btn-sm mx-1"
+              >
+                🚪 Cerrar Sesión
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="btn btn-outline-primary btn-sm mx-1 text-decoration-none">
+                🔐 Login
+              </Link>
+              <Link to="/register" className="btn btn-outline-primary btn-sm mx-1 text-decoration-none">
+                📝 Registro
+              </Link>
+            </>
+          )}
           
-          {/* Register */}
-          <Link to="/register" className="btn btn-outline-primary btn-sm mx-1 text-decoration-none">
-            📝 Register
-          </Link>
-          
-          {/* Perfil */}
-          <Link to="/profile" className="btn btn-outline-info btn-sm mx-1 text-decoration-none">
-            👤 Perfil
-          </Link>
-          
-          {/* Carrito con total dinámico */}
+          {/* Carrito CORREGIDO: usa cartItemCount, NO totalItems */}
           <Link 
             to="/cart" 
             className="btn btn-success btn-sm mx-1 d-flex align-items-center text-decoration-none"
           >
             <span className="me-1">🛒</span>
-            {totalItems > 0 ? (
+            {cartItemCount > 0 ? (
               <>
-                <span className="badge bg-danger rounded-pill ms-1 me-2">{totalItems}</span>
-                ${cartTotal.toFixed(2)}
+                <span className="badge bg-danger rounded-pill ms-1 me-2">
+                  {cartItemCount}  {/* ¡CORREGIDO! Antes decía totalItems */}
+                </span>
+                ${totalPrice.toFixed(2)}  {/* ¡CORREGIDO! Antes decía cartTotal */}
               </>
             ) : (
               'Carrito'

@@ -1,40 +1,47 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { UserProvider, useUser } from './context/UserContext';
+import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
-import Header from './components/Header';
+import Footer from './components/Footer';
 import Home from './pages/Home';
-import Pizza from './pages/Pizza';
+import PizzaDetail from './pages/PizzaDetail';
+import Cart from './pages/Cart';
+import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Cart from './pages/Cart';
 import Profile from './pages/Profile';
-import NotFound from './pages/NotFound';
-import Footer from './components/Footer';
-import { CartProvider } from './context/CartContext'; // ← NUEVO IMPORT
 
-const App = () => {
-  return (
-    <CartProvider> {/* ← ENVUELVE TODO CON EL PROVIDER */}
-      <Router>
-        <div className="App d-flex flex-column min-vh-100">
-          <Navbar />
-          <Header />
-          <main className="flex-grow-1">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/pizza/:id" element={<Pizza />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </Router>
-    </CartProvider>
-  );
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useUser();
+  if (loading) return <div className="loading-container"><p>Cargando...</p></div>;
+  return user ? children : <Navigate to="/login" />;
 };
+
+function App() {
+  return (
+    <UserProvider>
+      <CartProvider>
+        <Router>
+          <div className="App">
+            <Navbar />
+            <main className="main-content">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/pizza/:id" element={<PizzaDetail />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </main>
+            <Footer />
+          </div>
+        </Router>
+      </CartProvider>
+    </UserProvider>
+  );
+}
 
 export default App;
